@@ -28,10 +28,8 @@ functionwords = ['about', 'across', 'against', 'along', 'around', 'at',
 
 def overlapcontext( synset, sentence ):
     gloss = set(PunktWordTokenizer().tokenize(synset.definition()))
-    print "n"
-    print synset.definition()
-    print gloss
-    print synset.definition().split()
+    for i in synset.examples():
+         gloss.union(i)
     gloss = gloss.difference( functionwords )
     if isinstance(sentence, str):
         sentence = set(sentence.split(" "))
@@ -47,6 +45,7 @@ def overlapcontext( synset, sentence ):
 def lesk( word, sentence ):
     bestsense = None
     maxoverlap = 0
+    word=wordnet.morphy(word) if wordnet.morphy(word) is not None else word
     for sense in wordnet.synsets(word):
         overlap = overlapcontext(sense,sentence)
         for h in sense.hyponyms():
@@ -57,4 +56,15 @@ def lesk( word, sentence ):
     return bestsense
 
 
-print lesk("owl","owl is a bird")
+sentence = raw_input("Enter the Sentence (or) Context :")
+word = raw_input("Enter the word :")
+
+a = lesk(word,sentence)
+print "\n\nSynset:",a
+if a is not None:
+    print "Meaning:",a.definition()
+    num=0
+    print "\nExamples:"
+    for i in a.examples():
+        num=num+1
+        print str(num)+'.'+')',i
